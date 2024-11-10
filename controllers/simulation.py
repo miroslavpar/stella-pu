@@ -1,21 +1,24 @@
-from config.settings import (
-    INITIAL_RABBITS, INITIAL_FOXES, SIMULATION_PERIOD, RABBIT_BIRTH_RATE, RABBIT_DEATH_RATE,
-    FOX_BIRTH_RATE, FOX_DEATH_RATE, FOX_CONSUMPTION_RATE
-)
+import numpy as np
 
-def simulate_population():
-    rabbits = INITIAL_RABBITS
-    foxes = INITIAL_FOXES
-    results = []
+def run_simulation(participants, equations, simulation_period):
+    results = {name: [initial_value] for name, initial_value in participants.items()}
+    names = list(participants.keys())
 
-    for _ in range(SIMULATION_PERIOD):
-        rabbit_growth = rabbits * RABBIT_BIRTH_RATE
-        rabbit_death = rabbits * RABBIT_DEATH_RATE + foxes * FOX_CONSUMPTION_RATE
-        fox_growth = foxes * FOX_BIRTH_RATE
-        fox_death = foxes * FOX_DEATH_RATE
+    for t in range(simulation_period):
+        current_values = {name: results[name][-1] for name in names}
 
-        rabbits = rabbits + rabbit_growth - rabbit_death
-        foxes = foxes + fox_growth - fox_death
-        results.append((rabbits, foxes))
+        for equation in equations:
+            lhs, rhs = equation.split("=")
+            name = lhs.replace("'", "").strip()
+
+            if name not in current_values:
+                raise KeyError(name)
+
+            try:
+                new_value = eval(rhs, {}, current_values)
+            except ZeroDivisionError:
+                raise ZeroDivisionError("Division by zero in equation: " + equation)
+
+            results[name].append(new_value)
 
     return results

@@ -1,13 +1,15 @@
 import matplotlib.pyplot as plt
+import random
 
 def plot_results(results):
-    years = list(range(1, len(results) + 1))
-    rabbits = [result[0] for result in results]
-    foxes = [result[1] for result in results]
+    plt.figure()
+    for name, data in results.items():
+        color = "#"+''.join([random.choice('0123456789ABCDEF') for _ in range(6)])
+        plt.plot(data, label=name, color=color)
 
-    plt.plot(years, rabbits, label="Rabbits")
-    plt.plot(years, foxes, label="Foxes")
     plt.xlabel("Years")
     plt.ylabel("Population")
+    plt.title("Simulation Results")
     plt.legend()
+    plt.grid(True)
     plt.show()
